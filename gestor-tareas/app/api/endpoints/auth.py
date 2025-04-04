@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
-from app.schemas.usuario import UsuarioCreate, UsuarioResponse, UsuarioLogin, Token
+from app.schemas.usuario import UsuarioCreate, UsuarioResponse, Token
 from app.services import usuario_service
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
 
@@ -22,13 +23,14 @@ def register(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     return usuario_service.crear_usuario(db, usuario)
 
 @router.post("/login", response_model=Token)
-def login(usuario: UsuarioLogin, db: Session = Depends(get_db)):
-    db_usuario = usuario_service.autenticar_usuario(db, usuario.username, usuario.password)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    db_usuario = usuario_service.autenticar_usuario(db, form_data.username, form_data.password)
     if not db_usuario:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
     access_token = usuario_service.crear_access_token(data={"sub": db_usuario.username})
     return {"access_token": access_token, "token_type": "bearer"}

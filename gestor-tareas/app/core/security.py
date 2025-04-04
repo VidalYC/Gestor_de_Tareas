@@ -1,75 +1,45 @@
 import os
-import logging
-from fastapi import Depends, HTTPException, status, Security
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
-from app.core.database import SessionLocal
+from app.core.database import get_db
 from app.services.usuario_service import get_usuario_por_username
+from dotenv import load_dotenv
 
-# Configuración de logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+load_dotenv()
 
-# Usamos HTTPBearer para extraer el token del header Authorization
-bearer_scheme = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login") 
 
-# Configuración para JWT
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 
 if not SECRET_KEY:
-    raise ValueError("SECRET_KEY no está definida en las variables de entorno. Asegúrate de configurarla correctamente.")
+    raise ValueError("SECRET_KEY no está definida en las variables de entorno.")
 
-def get_db():
-    """Obtiene la sesión de base de datos"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def obtener_usuario_actual(
-    credentials: HTTPAuthorizationCredentials = Security(bearer_scheme),
-    db: Session = Depends(get_db)
-):
-    """Obtiene el usuario autenticado a partir del token JWT extraído mediante HTTPBearer"""
-    
-    token = credentials.credentials
-    logger.debug(f"🔹 Token recibido: {token}")
-
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No se proporcionó un token de autenticación",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
+def obtener_usuario_actual(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # Mensajes de depuración:
+    print(f"🔹 Token recibido: {token}")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudieron validar las credenciales",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
     try:
-        # Decodificar el token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        logger.debug(f"✅ Token decodificado correctamente: {payload}")
-
+        print(f"✅ Payload decodificado: {payload}")
         username: str = payload.get("sub")
         if username is None:
-            logger.debug("⚠️ El token no contiene 'sub'")
+            print("⚠️ El token no contiene 'sub'")
             raise credentials_exception
-
     except JWTError as e:
-        logger.debug(f"❌ Error al decodificar el token: {e}")
+        print(f"❌ Error al decodificar el token: {e}")
         raise credentials_exception
 
-    # Buscar usuario en la base de datos
     usuario = get_usuario_por_username(db, username)
     if usuario is None:
-        logger.debug(f"⚠️ Usuario '{username}' no encontrado en la base de datos.")
+        print(f"⚠️ Usuario '{username}' no encontrado en la base de datos.")
         raise credentials_exception
 
-    logger.debug(f"✅ Usuario autenticado: {usuario.username}")
+    print(f"✅ Usuario autenticado: {usuario.username}")
     return usuario
