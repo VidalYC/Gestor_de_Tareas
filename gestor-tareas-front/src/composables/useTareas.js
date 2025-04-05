@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import api from '@/services/api'
 
-export function useTareas() {
+export function useTareas(showAlert) {
   const tasks = ref([])
   const tareaParaEditar = ref(null)
 
@@ -11,6 +11,7 @@ export function useTareas() {
       const res = await api.get('/tareas')
       tasks.value = res.data
     } catch (error) {
+      if(showAlert) showAlert('Error al cargar tareas', 'error')
       console.error('Error al cargar tareas:', error)
     }
   }
@@ -24,8 +25,10 @@ export function useTareas() {
         fecha_limite: task.fecha_limite,
         estado: 'Completada'
       })
-      loadTasks()
+      await loadTasks()
+      if(showAlert) showAlert('Tarea completada con éxito', 'success')
     } catch (error) {
+      if(showAlert) showAlert('Error al completar tarea', 'error')
       console.error('Error al completar tarea:', error)
     }
   }
@@ -41,8 +44,10 @@ export function useTareas() {
   const eliminarTarea = async (id) => {
     try {
       await api.delete(`/tareas/${id}`)
-      loadTasks()
+      await loadTasks()
+      if(showAlert) showAlert('Tarea eliminada correctamente', 'success')
     } catch (error) {
+      if(showAlert) showAlert('Error al eliminar tarea', 'error')
       console.error('Error al eliminar tarea:', error)
     }
   }

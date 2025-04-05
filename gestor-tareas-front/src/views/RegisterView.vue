@@ -1,5 +1,19 @@
 <template>
   <div :class="['register-container', { dark: darkMode }]">
+    <transition-group 
+      name="alerts"
+      tag="div"
+      class="alerts-container"
+    >
+      <FloatingAlert 
+        v-for="alert in alerts"
+        :key="alert.id"
+        :message="alert.message"
+        :type="alert.type"
+        :duration="alert.duration"
+      />
+    </transition-group>
+    
     <ThemeToggle />
 
     <h2 class="register-title">Crear cuenta</h2>
@@ -28,8 +42,6 @@
       <button type="submit" class="register-button">Registrarse</button>
     </form>
 
-    <p v-if="error" class="error">{{ error }}</p>
-
     <p class="login-redirect">
       ¿Ya tienes cuenta?
       <router-link to="/login" class="link">Inicia sesión</router-link>
@@ -41,12 +53,27 @@
 import { useRegister } from '@/composables/useRegister'
 import { darkMode } from '@/composables/theme'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import FloatingAlert from '@/components/FloatingAlert.vue'
+import { useAlerts } from '@/composables/useAlerts'
 
-const { username, email, password, error, handleRegister } = useRegister()
+// Agrega alerts aquí
+const { alerts, showAlert } = useAlerts()  // <-- Cambio crucial
+const { username, email, password, handleRegister } = useRegister(showAlert)
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+
+.alerts-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .register-container {
   display: flex;
@@ -146,8 +173,12 @@ const { username, email, password, error, handleRegister } = useRegister()
 }
 
 .error {
-  color: red;
+  color: #ff0000;
   margin-top: 1rem;
+  padding: 0.8rem;
+  background-color: #ffeeee;
+  border: 1px solid #ff0000;
+  border-radius: 8px;
 }
 
 .login-redirect {

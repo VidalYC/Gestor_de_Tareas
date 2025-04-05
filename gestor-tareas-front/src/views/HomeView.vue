@@ -3,12 +3,13 @@
     <!-- Componente del botón de modo oscuro -->
     <ThemeToggle />
 
-    <h1 class="home-title">Bienvenido al Gestor de Tareas</h1>
-
     <div class="home-content">
       <div class="home-text">
+        <h1 class="home-title">Gestor de Tareas</h1>
         <h3>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut dolores neque recusandae nisi soluta nostrum omnis molestiae libero iure expedita repudiandae quaerat blanditiis sequi repellat, quam corrupti ducimus. Magni, aut?
+          🚀 ¡Bienvenido al mejor gestor de tareas del universo! 🌌<br />
+              Organiza tu día, conquista tus pendientes 📝 y gana la batalla contra la procrastinación 💪. <br />
+              Porque sí, hasta los superhéroes necesitan una lista de tareas 🦸‍♂️✨.
         </h3>
         <router-link to="/login" class="start-button">Get Started</router-link>
       </div>
@@ -69,10 +70,10 @@ import tareaImage from '@/assets/task.png'
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 5px;
-  max-width: 1000px;
+  gap: 1px;
+  max-width: 1300px;
   flex-wrap: wrap;
-  margin-top: 2rem;
+  margin-top: 7rem;
 }
 
 .home-text {
@@ -124,7 +125,40 @@ import tareaImage from '@/assets/task.png'
   height: auto;
   border: none;
   box-shadow: none;
-  transform: translateX(200px);
+  transform: translate3d(100px, 0, 0); /* Cambiamos translateX a translate3d */
   margin-left: 0;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translate3d(100px, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(100px, -15px, 0) rotate(2deg);
+  }
+  100% {
+    transform: translate3d(100px, 0, 0) rotate(0deg);
+  }
+}
+
+/* Versión para móvil */
+@media (max-width: 768px) {
+  .home-image img {
+    transform: none;
+    animation: float-mobile 3s ease-in-out infinite;
+  }
+
+  @keyframes float-mobile {
+    0% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(2deg);
+    }
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+  }
 }
 </style>

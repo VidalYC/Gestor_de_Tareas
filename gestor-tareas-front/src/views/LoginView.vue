@@ -1,5 +1,19 @@
 <template>
   <div :class="['login-container', { dark: darkMode }]">
+    <transition-group 
+      name="alerts"
+      tag="div"
+      class="alerts-container"
+    >
+      <FloatingAlert 
+        v-for="alert in alerts"
+        :key="alert.id"
+        :message="alert.message"
+        :type="alert.type"
+        :duration="alert.duration"
+      />
+    </transition-group>
+
     <ThemeToggle class="theme-toggle" />
 
     <h2 class="login-title">Iniciar Sesión</h2>
@@ -13,9 +27,6 @@
     <p class="register-text custom-font">¿No tienes cuenta?
       <router-link to="/register" class="start-link">Registro</router-link>
     </p>
-
-
-    <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
 
@@ -23,12 +34,27 @@
 import { useLogin } from '@/composables/useLogin'
 import { darkMode } from '@/composables/theme'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import FloatingAlert from '@/components/FloatingAlert.vue'
+import { useAlerts } from '@/composables/useAlerts'
 
-const { username, password, error, handleLogin } = useLogin()
+const { alerts, showAlert } = useAlerts()
+const { username, password, handleLogin } = useLogin(showAlert)
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+
+.alerts-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .login-input:focus {
   outline: none;

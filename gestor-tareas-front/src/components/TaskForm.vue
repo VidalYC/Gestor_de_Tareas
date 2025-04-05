@@ -47,7 +47,7 @@ const props = defineProps({
   tareaEditable: Object
 });
 
-const emit = defineEmits(['refresh', 'limpiar']);
+const emit = defineEmits(['refresh', 'limpiar', 'created', 'updated', 'error']);
 
 const titulo = ref('');
 const descripcion = ref('');
@@ -82,6 +82,7 @@ const handleSubmit = async () => {
         fecha_limite: fecha_limite.value || null,
         estado: props.tareaEditable.estado || 'Pendiente'
       });
+      emit('updated'); // Nuevo evento para actualización
     } else {
       await api.post('/tareas', {
         titulo: titulo.value,
@@ -89,6 +90,7 @@ const handleSubmit = async () => {
         prioridad: prioridad.value,
         fecha_limite: fecha_limite.value || null
       });
+      emit('created'); // Nuevo evento para creación
     }
 
     limpiarFormulario();
@@ -96,6 +98,7 @@ const handleSubmit = async () => {
     emit('limpiar');
   } catch (error) {
     console.error('Error al enviar el formulario:', error);
+    emit('error', error.response?.data?.message || 'Error en el formulario'); // Nuevo evento de error
   }
 };
 
@@ -104,6 +107,7 @@ const cancelarEdicion = () => {
   emit('limpiar');
 };
 </script>
+
 
 <style scoped>
 

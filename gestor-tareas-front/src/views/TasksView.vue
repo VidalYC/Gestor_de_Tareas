@@ -1,21 +1,37 @@
 <template>
   <div :class="['task-container', { dark: darkMode }]">
+    <transition-group 
+      name="alerts"
+      tag="div"
+      class="alerts-container"
+    >
+      <FloatingAlert 
+        v-for="alert in alerts"
+        :key="alert.id"
+        :message="alert.message"
+        :type="alert.type"
+        :duration="alert.duration"
+      />
+    </transition-group>
+    
     <NavBar :darkMode="darkMode" />
     <ThemeToggle class="theme-toggle" />
 
     <div class="task-view">
-
       <div class="task-form-container">
-        <h2 class="section-title">Crear / Editar Tarea</h2>
+        <h2 class="section-title">Crear / Editar Tarea ✍️</h2>
         <TaskForm 
           :tareaEditable="tareaParaEditar" 
-          @refresh="loadTasks" 
-          @limpiar="limpiarEdicion" 
+          @refresh="loadTasks"
+          @limpiar="limpiarEdicion"
+          @created="handleCreated"
+          @updated="handleUpdated"
+          @error="handleError"
         />
       </div>
       
       <div class="task-list-container">
-        <h2 class="section-title">Lista de Tareas</h2>
+        <h2 class="section-title">Lista de Tareas 📝</h2>
         <ul class="task-list">
           <li v-for="task in tasks" :key="task.id" class="task-item">
             <div class="task-header">
@@ -49,7 +65,6 @@
                 </span>
               </p>
             </div>
-
           </li>
         </ul>
       </div>
@@ -61,8 +76,12 @@
 import TaskForm from '@/components/TaskForm.vue'
 import NavBar from '@/components/NavBar.vue'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import FloatingAlert from '@/components/FloatingAlert.vue'
 import { useTareas } from '@/composables/useTareas.js'
 import { darkMode } from '@/composables/theme'
+import { useAlerts } from '@/composables/useAlerts'
+
+const { alerts, showAlert } = useAlerts()
 
 const {
   tasks,
@@ -73,11 +92,77 @@ const {
   limpiarEdicion,
   eliminarTarea,
   formatDate
-} = useTareas()
+} = useTareas(showAlert)
+
+// Manejadores de alertas para el formulario
+const handleCreated = () => {
+  showAlert('¡Tarea creada exitosamente! 🎉', 'success')
+}
+
+const handleUpdated = () => {
+  showAlert('¡Tarea actualizada correctamente! ✏️', 'success')
+}
+
+const handleError = (message) => {
+  showAlert(message || '❌ Error en la operación', 'error')
+}
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+
+.alerts-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alerts-enter-active {
+  animation: alertSlideIn 0.4s ease-out;
+}
+
+.alerts-leave-active {
+  animation: alertSlideOut 0.3s ease-in;
+}
+
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes alertSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+
+.alerts-enter-from,
+.alerts-leave-to {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.alerts-move {
+  transition: transform 0.5s ease;
+}
 
 .task-container {
   min-height: 100vh;
