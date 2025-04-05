@@ -1,14 +1,18 @@
 <template>
     <div class="toggle-container">
       <label class="switch">
-        <input type="checkbox" v-model="darkMode" />
+        <input 
+        type="checkbox" 
+        :checked="darkMode" 
+        @change="toggleTheme"
+      />
         <span class="slider"></span>
       </label>
     </div>
   </template>
   
   <script setup>
-  import { darkMode } from '@/composables/theme'
+  import { darkMode, toggleTheme } from '@/composables/theme';
   </script>
   
   <style scoped>

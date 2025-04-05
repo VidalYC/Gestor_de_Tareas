@@ -1,11 +1,17 @@
 <template>
   <form @submit.prevent="handleSubmit" class="task-form">
-    <input v-model="titulo" placeholder="Título" required />
-    <textarea v-model="descripcion" placeholder="Descripción" rows="3"></textarea>
+    <input v-model="titulo" class="form-input" placeholder="Título" required />
 
-    <label>
+    <textarea
+      v-model="descripcion"
+      class="form-input"
+      placeholder="Descripción"
+      rows="3"
+    ></textarea>
+
+    <label class="form-label">
       Prioridad:
-      <select v-model="prioridad">
+      <select v-model="prioridad" class="form-input">
         <option disabled value="">Selecciona una prioridad</option>
         <option value="Alta">Alta</option>
         <option value="Media">Media</option>
@@ -13,16 +19,21 @@
       </select>
     </label>
 
-    <label>
+    <label class="form-label">
       Fecha Límite:
-      <input type="date" v-model="fecha_limite" />
+      <input type="date" v-model="fecha_limite" class="form-input" />
     </label>
 
-    <button type="submit">
+    <button type="submit" class="submit-btn">
       {{ tareaEditable ? 'Actualizar tarea' : 'Crear tarea' }}
     </button>
 
-    <button v-if="tareaEditable" type="button" @click="cancelarEdicion" class="cancelar-btn">
+    <button
+      v-if="tareaEditable"
+      type="button"
+      @click="cancelarEdicion"
+      class="cancelar-btn"
+    >
       Cancelar
     </button>
   </form>
@@ -43,7 +54,6 @@ const descripcion = ref('');
 const prioridad = ref('');
 const fecha_limite = ref('');
 
-// Cuando se pasa una tarea para editar, llenamos los campos
 watch(() => props.tareaEditable, (nuevaTarea) => {
   if (nuevaTarea) {
     titulo.value = nuevaTarea.titulo;
@@ -65,7 +75,6 @@ const limpiarFormulario = () => {
 const handleSubmit = async () => {
   try {
     if (props.tareaEditable) {
-      // Actualizar tarea existente
       await api.put(`/tareas/${props.tareaEditable.id}`, {
         titulo: titulo.value,
         descripcion: descripcion.value,
@@ -74,7 +83,6 @@ const handleSubmit = async () => {
         estado: props.tareaEditable.estado || 'Pendiente'
       });
     } else {
-      // Crear nueva tarea
       await api.post('/tareas', {
         titulo: titulo.value,
         descripcion: descripcion.value,
@@ -93,24 +101,95 @@ const handleSubmit = async () => {
 
 const cancelarEdicion = () => {
   limpiarFormulario();
-  emit('limpiar'); // le dice al padre que limpie la edición
+  emit('limpiar');
 };
 </script>
 
 <style scoped>
+
 .task-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.form-input {
+  padding: 0.8rem;
+  width: 100%;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  color: #333;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  width: calc(100% - 2px);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #00a2ff;
+  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.3);
+}
+
+.task-container.dark .form-input {
+  background-color: #1e2533;
+  border: 1px solid #444;
+  color: #eee;
+}
+
+.task-container.dark .form-input:focus {
+  border-color: #5856d6;
+  box-shadow: 0 0 0 3px rgba(88, 86, 214, 0.4);
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  font-family: 'Poppins', sans-serif;
+}
+
+.submit-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-btn:hover {
+  background-color: #43a047;
 }
 
 .cancelar-btn {
   background-color: #ccc;
   color: black;
   border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.cancelar-btn:hover {
+  background-color: #b0b0b0;
 }
 </style>
