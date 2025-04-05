@@ -39,64 +39,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import api from '@/services/api';
-import TaskForm from '@/components/TaskForm.vue';
-import NavBar from '@/components/NavBar.vue';
+import TaskForm from '@/components/TaskForm.vue'
+import NavBar from '@/components/NavBar.vue'
+import { useTareas } from '@/composables/useTareas.js'
 
-const tasks = ref([]);
-const tareaParaEditar = ref(null); // almacena la tarea seleccionada para edición
-
-const loadTasks = async () => {
-  try {
-    const res = await api.get('/tareas');
-    tasks.value = res.data;
-  } catch (error) {
-    console.error('Error al cargar tareas:', error);
-  }
-};
-
-const completarTarea = async (task) => {
-  try {
-    await api.put(`/tareas/${task.id}`, {
-      titulo: task.titulo,
-      descripcion: task.descripcion,
-      prioridad: task.prioridad,
-      fecha_limite: task.fecha_limite,
-      estado: 'Completada',
-    });
-    loadTasks();
-  } catch (error) {
-    console.error('Error al completar tarea:', error);
-  }
-};
-
-const editarTarea = (task) => {
-  tareaParaEditar.value = { ...task }; // pasamos la tarea al formulario
-};
-
-const limpiarEdicion = () => {
-  tareaParaEditar.value = null; // resetea el formulario al crear nueva
-};
-
-const eliminarTarea = async (id) => {
-  try {
-    await api.delete(`/tareas/${id}`);
-    loadTasks();
-  } catch (error) {
-    console.error('Error al eliminar tarea:', error);
-  }
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return 'No asignada';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
-};
-
-onMounted(() => {
-  loadTasks();
-});
+const {
+  tasks,
+  tareaParaEditar,
+  loadTasks,
+  completarTarea,
+  editarTarea,
+  limpiarEdicion,
+  eliminarTarea,
+  formatDate
+} = useTareas()
 </script>
 
 <style scoped>
