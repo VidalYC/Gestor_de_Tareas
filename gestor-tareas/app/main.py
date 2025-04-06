@@ -4,9 +4,8 @@ from app.api.endpoints import usuarios, tareas
 
 app = FastAPI(title="Gestor de Tareas API")
 
-# Configuración de CORS
 origins = [
-    "http://localhost:8082"  # Cambia esta URL al dominio de tu frontend si es diferente
+    "http://localhost:8082" 
 ]
 
 app.add_middleware(
