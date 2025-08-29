@@ -1,6 +1,6 @@
 [build]
 # Aquí le decimos a Railway que el backend está en la carpeta gestor-tareas
-root = "gestor-tareas"
+rootDirectory = "gestor-tareas"
 
 [deploy]
 # Comando que Railway usará para arrancar el backend
