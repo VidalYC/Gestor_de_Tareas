@@ -28,8 +28,9 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado lo siguiente:
   - [Descargar Node.js](https://nodejs.org/)
 - 🐍 **Python 3.7+** (para backend)
   - [Descargar Python](https://www.python.org/downloads/)
-- (Opcional) **Virtualenv** para gestionar entornos virtuales en Python
 - 💻 **Git** para clonar el repositorio
+- 📦 **Alembic** para migraciones de base de datos en el backend
+- (Opcional) **Virtualenv** para gestionar entornos virtuales en Python
 
 ---
 
@@ -42,27 +43,35 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado lo siguiente:
    cd Gestor_de_Tareas
    ```
 
-2. **Instalar dependencias del backend (Python)**
+2. **Instalar dependencias del backend (`gestor-tareas`)**
 
    ```bash
-   cd backend
+   cd gestor-tareas
    python -m venv venv
    source venv/bin/activate  # En Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
-3. **Instalar dependencias del frontend (Vue)**
+3. **Configurar y aplicar migraciones con Alembic**
+
+   - Edita la configuración de la base de datos en `alembic.ini` si es necesario.
+   - Ejecuta las migraciones:
+     ```bash
+     alembic upgrade head
+     ```
+
+4. **Instalar dependencias del frontend (Vue)**
 
    ```bash
    cd ../frontend
    npm install
    ```
 
-4. **Ejecutar la aplicación**
+5. **Ejecutar la aplicación**
 
    - **Backend:**
      ```bash
-     cd backend
+     cd gestor-tareas
      source venv/bin/activate
      python app.py
      ```
@@ -72,7 +81,7 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado lo siguiente:
      npm run serve
      ```
 
-5. Accede al gestor desde tu navegador en la dirección indicada por el frontend (normalmente http://localhost:8080).
+6. Accede al gestor desde tu navegador en la dirección indicada por el frontend (normalmente http://localhost:8080).
 
 ---
 
