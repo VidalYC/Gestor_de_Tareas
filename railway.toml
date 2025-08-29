@@ -1,0 +1,11 @@
+[build]
+# Aquí le decimos a Railway que el backend está en la carpeta gestor-tareas
+root = "gestor-tareas"
+
+[deploy]
+# Comando que Railway usará para arrancar el backend
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+[env]
+# Opcional: puedes forzar variables de entorno locales si quieres
+PYTHONUNBUFFERED = "1"
