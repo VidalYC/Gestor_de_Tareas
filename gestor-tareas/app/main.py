@@ -5,6 +5,7 @@ from app.api.endpoints import usuarios, tareas
 app = FastAPI(title="Gestor de Tareas API")
 
 origins = [
+    "http://localhost:8080",
     "http://localhost:8082",
     "https://gestor-tareas.vercel.app",
 ]
