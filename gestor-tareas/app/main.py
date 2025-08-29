@@ -7,7 +7,7 @@ app = FastAPI(title="Gestor de Tareas API")
 origins = [
     "http://localhost:8080",
     "http://localhost:8082",
-    "https://gestor-de-tareas-zeta.vercel.app",
+    "https://gestor-de-tareas-simple.vercel.app",
 ]
 
 app.add_middleware(
