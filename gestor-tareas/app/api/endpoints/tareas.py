@@ -8,11 +8,11 @@ from app.services import tarea_service
 
 router = APIRouter(prefix="/tareas", tags=["Tareas"])
 
-@router.post("/", response_model=TareaResponse)
+@router.post("", response_model=TareaResponse)
 def crear_tarea(tarea: TareaCreate, db: Session = Depends(get_db), usuario: Usuario = Depends(obtener_usuario_actual)):
     return tarea_service.crear_tarea(db, tarea, usuario.id)
 
-@router.get("/", response_model=list[TareaResponse])
+@router.get("", response_model=list[TareaResponse])
 def listar_tareas(db: Session = Depends(get_db), usuario: Usuario = Depends(obtener_usuario_actual)):
     return tarea_service.obtener_tareas_por_usuario(db, usuario.id)
 
